@@ -21,4 +21,22 @@ export class CSVCakeMapper implements IMapper<string[],Cake>{
         .setPackagingType(data[14])
         .build();
     }
+    reverseMap(data: Cake): string[] {
+        return [
+            data.getType(),
+            data.getFlavor(),
+            data.getFilling(),
+            data.getSize().toString(),
+            data.getLayers().toString(),
+            data.getFrostingType(),
+            data.getFrostingFlavor(),
+            data.getDecorationType(),
+            data.getDecorationColor(),
+            data.getCustomMessage(),
+            data.getShape(),
+            data.getAllergies(),
+            data.getSpecialIngredients(),
+            data.getPackagingType()
+        ]
+    }
 }
