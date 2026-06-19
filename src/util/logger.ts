@@ -15,10 +15,11 @@ const logConsoleFormate = winston.format.combine(
     winston.format.timestamp({format:"HH:mm:ss"}),
     winston.format.errors({stack: true}),
     winston.format.splat(),
-    winston.format.printf(({level, message, timestamp, stack}) => {
-        return `[${timestamp}] ${level}: ${message} ${stack || ""}`;
+    winston.format.printf(({level, message, timestamp, stack, ...meta}) => {
+        let metaStr = Object.keys(meta).length ? `\n${JSON.stringify(meta, null, 2)}` : "";
+        return `[${timestamp}] ${level}: ${message} ${stack || ""}${metaStr}`;
     }),
-)
+);
 const logger = winston.createLogger({
     level:"info",
     transports:[

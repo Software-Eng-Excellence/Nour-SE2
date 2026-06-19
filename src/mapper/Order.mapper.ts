@@ -1,7 +1,7 @@
 import { IOrder } from "../model/IOrder";
 import { IMapper } from "./IMapper";
 import { OrderBuilder } from "../model/builders/order.builder";
-import { IItem } from "../model/IItem";
+import {  IItem } from "../model/IItem";
 
 
 export class CSVOrderMapper implements IMapper<string[], IOrder> {
@@ -16,14 +16,34 @@ export class CSVOrderMapper implements IMapper<string[], IOrder> {
                         .setItem(item)
                         .build();
         }
+}
 
-    reverseMap(data: IOrder): string[] {
-        const item = this.itemMapper.reverseMap(data.getItem());
-        return[
-            data.getID(),
-            ...item,
-            data.getPrice().toString(),
-            data.getQuantity().toString()
-        ]
+export class JSONOrderMapper implements IMapper<{ [key: string]: string }, IOrder> {
+    constructor(private itemMapper: IMapper<{ [key: string]: string }, IItem>) { }
+
+    map(data: { [key: string]: string }): IOrder {
+        const item = this.itemMapper.map(data);
+        
+        return OrderBuilder.newBuilder()
+            .setId(data["Order ID"])
+            .setPrice(parseInt(data["Price"]))
+            .setQuantity(parseInt(data["Quantity"]))
+            .setItem(item)
+            .build();
+    }
+}
+
+export class XMLOrderMapper implements IMapper<{ [key: string]: string }, IOrder> {
+    constructor(private itemMapper: IMapper<{ [key: string]: string }, IItem>) { }
+
+    map(data: { [key: string]: string }): IOrder {
+        const item = this.itemMapper.map(data);
+
+        return OrderBuilder.newBuilder()
+            .setId(data["OrderID"])
+            .setPrice(parseInt(data["Price"]))
+            .setQuantity(parseInt(data["Quantity"]))
+            .setItem(item)
+            .build();
     }
 }
