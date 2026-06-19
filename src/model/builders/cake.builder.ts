@@ -1,5 +1,5 @@
 import logger from "../../util/logger";
-import { Cake } from "../Cake.model";
+import { Cake, IdentifiableCake } from "../Cake.model";
 
 export class CakeBuilder{
     private type! : string;
@@ -130,4 +130,45 @@ export class CakeBuilder{
             this.packagingType
         );
     }   
+}
+
+export class IdentifiableCakeBuilder{
+    private id! : string;
+    private cake!: Cake;
+
+    static newBuilder(): IdentifiableCakeBuilder {
+        return new IdentifiableCakeBuilder();
+    }
+
+    setID(id: string): IdentifiableCakeBuilder {
+        this.id = id;
+        return this;
+    }
+    setCake(cake: Cake): IdentifiableCakeBuilder {
+        this.cake = cake;
+        return this;
+    }
+    build(): IdentifiableCake {
+        if (!this.id || !this.cake) {
+            logger.error("Missing required properties, couldn't create an IdentifiableCake");
+            throw new Error("Missing required properties");
+        }
+        return new IdentifiableCake(
+            this.id,
+            this.cake.getType(),
+            this.cake.getFlavor(),
+            this.cake.getFilling(),
+            this.cake.getSize(),
+            this.cake.getLayers(),
+            this.cake.getFrostingType(),
+            this.cake.getFrostingFlavor(),
+            this.cake.getDecorationType(),
+            this.cake.getDecorationColor(),
+            this.cake.getCustomMessage(),
+            this.cake.getShape(),
+            this.cake.getAllergies(),
+            this.cake.getSpecialIngredients(),
+            this.cake.getPackagingType()
+        );
+    }
 }

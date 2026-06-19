@@ -1,6 +1,6 @@
 import { Cake } from "../model/Cake.model";
 import { IMapper } from "./IMapper";
-import { CakeBuilder } from "../model/builders/cake.builder";
+import { CakeBuilder} from "../model/builders/cake.builder";
 
 export class CSVCakeMapper implements IMapper<string[],Cake>{
     map(data:string[]):Cake{
@@ -20,23 +20,5 @@ export class CSVCakeMapper implements IMapper<string[],Cake>{
         .setSpecialIngredients(data[13])
         .setPackagingType(data[14])
         .build();
-    }
-    reverseMap(data: Cake): string[] {
-        return [
-            data.getType(),
-            data.getFlavor(),
-            data.getFilling(),
-            data.getSize().toString(),
-            data.getLayers().toString(),
-            data.getFrostingType(),
-            data.getFrostingFlavor(),
-            data.getDecorationType(),
-            data.getDecorationColor(),
-            data.getCustomMessage(),
-            data.getShape(),
-            data.getAllergies(),
-            data.getSpecialIngredients(),
-            data.getPackagingType()
-        ]
     }
 }
