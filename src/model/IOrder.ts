@@ -1,5 +1,5 @@
 import { ID } from "../repository/IRepository";
-import {  IItem } from "./IItem";
+import { IIdentifiableItem, IItem } from "./IItem";
 
 export interface IOrder{
     getItem(): IItem;

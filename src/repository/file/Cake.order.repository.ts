@@ -28,8 +28,8 @@ export class CakeOrderRepository extends OrderRepository {
           "Decoration Color", "Custom Message", "Shape", "Allergies",
           "Special Ingredients", "Packaging Type", "Price", "Quantity"
       ];
-      // const rawItems = orders.map(this.mapper.reverseMap.bind(this.mapper));
-      // await writeCsvFile(this.filePath, [header, ...rawItems]);
+      const rawItems = orders.map(this.mapper.reverseMap.bind(this.mapper));
+      await writeCsvFile(this.filePath, [header, ...rawItems]);
     } catch (error) {
       throw new DbException("Failed to save orders to file: ", error as Error);
     }

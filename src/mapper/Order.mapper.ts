@@ -1,7 +1,7 @@
-import { IOrder } from "../model/IOrder";
+import { IIdentifiableOrderItem, IOrder } from "../model/IOrder";
 import { IMapper } from "./IMapper";
-import { OrderBuilder } from "../model/builders/order.builder";
-import {  IItem } from "../model/IItem";
+import { IdentifiableOrderItemBuilder, OrderBuilder } from "../model/builders/order.builder";
+import { IIdentifiableItem, IItem } from "../model/IItem";
 
 
 export class CSVOrderMapper implements IMapper<string[], IOrder> {
@@ -16,6 +16,16 @@ export class CSVOrderMapper implements IMapper<string[], IOrder> {
                         .setItem(item)
                         .build();
         }
+
+    reverseMap(data: IOrder): string[] {
+        const item = this.itemMapper.reverseMap(data.getItem());
+        return[
+            data.getID(),
+            ...item,
+            data.getPrice().toString(),
+            data.getQuantity().toString()
+        ]
+    }
 }
 
 export class JSONOrderMapper implements IMapper<{ [key: string]: string }, IOrder> {
@@ -30,6 +40,17 @@ export class JSONOrderMapper implements IMapper<{ [key: string]: string }, IOrde
             .setQuantity(parseInt(data["Quantity"]))
             .setItem(item)
             .build();
+    }
+    reverseMap(data: IOrder): { [key: string]: string } {
+
+        const itemData = this.itemMapper.reverseMap(data.getItem());
+
+        return {
+            "Order ID": data.getID(),
+            ...itemData,
+            "Price": data.getPrice().toString(),
+            "Quantity": data.getQuantity().toString()
+        };
     }
 }
 
@@ -46,4 +67,47 @@ export class XMLOrderMapper implements IMapper<{ [key: string]: string }, IOrder
             .setItem(item)
             .build();
     }
+    reverseMap(data: IOrder): { [key: string]: string } {
+
+        const itemData = this.itemMapper.reverseMap(data.getItem());
+
+        return {
+            "OrderID": data.getID(),
+            ...itemData,
+            "Price": data.getPrice().toString(),
+            "Quantity": data.getQuantity().toString()
+        };
+    }
+}
+
+export interface SQLieteOrder{
+    id:string;
+    quantity:number;
+    price:number;
+    item_category:string;
+    item_id:string;
+}
+export class SQLiteOrderMapper implements IMapper<{data: SQLieteOrder, item: IIdentifiableItem}, IIdentifiableOrderItem> {
+    map({data , item}: {data: SQLieteOrder, item: IIdentifiableItem}): IIdentifiableOrderItem {
+        const order= OrderBuilder.newBuilder()
+                        .setId(data.id)
+                        .setPrice(data.price)
+                        .setQuantity(data.quantity)
+                        .setItem(item)
+                        .build();
+        return IdentifiableOrderItemBuilder.newBuilder().setOrder(order).setItem(item).build();
+    }
+
+    reverseMap(d: IIdentifiableOrderItem):  {data: SQLieteOrder, item: IIdentifiableItem} {
+        return {
+            data: {
+                id: d.getID(),
+                quantity: d.getQuantity(),
+                price: d.getPrice(),
+                item_category: d.getItem().getCategory(),
+                item_id: d.getItem().getID()
+            },
+            item: d.getItem()
+        }
+    }    
 }

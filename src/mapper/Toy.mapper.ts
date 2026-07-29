@@ -17,4 +17,18 @@ export class XMLToyMapper implements IMapper<{ [key: string]: string }, Toy> {
             .setDescription(data["Description"])
             .build();
     }
+    reverseMap(data: Toy): { [key: string]: string } {
+        return {
+            Name: data.getName(),
+            Brand: data.getBrand(),
+            Type: data.getType(),
+            Material: data.getMaterial(),
+            Color: data.getColor(),
+            AgeRecommendation: data.getAgeRecommendation(),
+            Price: data.getPrice().toString(),
+            Weight: data.getWeight().toString(),
+            BatteryRequired: data.isBatteryRequired().toString(),
+            Description: data.getDescription()
+        };
+    }
 }

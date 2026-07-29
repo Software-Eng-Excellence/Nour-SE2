@@ -10,7 +10,24 @@ describe("CSVOrderMapper", () => {
         const mockItemMapper: IMapper<string[], any> = {
             map: jest.fn().mockReturnValue({
                 getType: () => "Birthday Cake"
-            })
+            }),
+
+            reverseMap: jest.fn().mockReturnValue([
+                "Birthday",
+                "Chocolate",
+                "Filling",
+                "2",
+                "3",
+                "Buttercream",
+                "Chocolate",
+                "Flowers",
+                "Pink",
+                "Message",
+                "Round",
+                "None",
+                "None",
+                "Box"
+            ])
         };
 
         mapper = new CSVOrderMapper(mockItemMapper);
@@ -19,7 +36,7 @@ describe("CSVOrderMapper", () => {
     it("Map Successfully", () => {
 
         const order = [
-            "1001", 
+            "1001",
             "Birthday",
             "Chocolate",
             "Filling",
@@ -34,8 +51,8 @@ describe("CSVOrderMapper", () => {
             "None",
             "None",
             "Box",
-            "100", 
-            "2"             
+            "100",
+            "2"
         ];
 
         const mappedOrder = mapper.map(order);
@@ -53,6 +70,38 @@ describe("CSVOrderMapper", () => {
 
         expect(() => mapper.map(order))
             .toThrow("Missing required fields to build Order");
+    });
+
+    it("Reverse Map Successfully", () => {
+
+        const mockOrder = {
+            getID: jest.fn().mockReturnValue("1001"),
+            getPrice: jest.fn().mockReturnValue(100),
+            getQuantity: jest.fn().mockReturnValue(2),
+            getItem: jest.fn().mockReturnValue({})
+        };
+
+        const result = mapper.reverseMap(mockOrder as any);
+
+        expect(result).toEqual([
+            "1001",
+            "Birthday",
+            "Chocolate",
+            "Filling",
+            "2",
+            "3",
+            "Buttercream",
+            "Chocolate",
+            "Flowers",
+            "Pink",
+            "Message",
+            "Round",
+            "None",
+            "None",
+            "Box",
+            "100",
+            "2"
+        ]);
     });
 
 });

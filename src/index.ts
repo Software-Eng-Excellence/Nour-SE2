@@ -1,44 +1,61 @@
-import { parseCSV, parseJSON, parseXML } from "./util/parser";
+import logger from "./util/logger";
+import { CakeOrderRepository } from "./repository/file/Cake.order.repository";
+import config from "./config";
 
-import { CSVCakeMapper } from "./mapper/Cake.mapper";
-import { JSONBookMapper } from "./mapper/Book.mapper";
-import { XMLToyMapper } from "./mapper/Toy.mapper";
+import { OrderRepository } from "./repository/sqlite/Order.repository";
+import { CakeRepository } from "./repository/sqlite/Cake.order.repository";
+import { CakeBuilder, IdentifiableCakeBuilder } from "./model/builders/cake.builder";
+import { IdentifiableOrderItemBuilder, OrderBuilder } from "./model/builders/order.builder";
 
-import {CSVOrderMapper,JSONOrderMapper,XMLOrderMapper} from "./mapper/Order.mapper";
 
-async function mappingCsv(): Promise<void> {
-    const data = await parseCSV("src/data/cake orders.csv");
+async function main() {
+const path = config.storagePath.csv.cake;
+const repository = new CakeOrderRepository(path);
+const data = await repository.get("17");
+logger.info("List of orders:\n %o", data);
 
-    const cakeMapper = new CSVCakeMapper();
-    const orderMapper = new CSVOrderMapper(cakeMapper);
-
-    const orders = data.map((row: string[]) => orderMapper.map(row));
-
-    console.log(orders);
 }
 
-mappingCsv();
 
-async function mappingJson(): Promise<void> {
-    const data = await parseJSON("src/data/book orders.json");
+async function DBSandBox() {
+    
+    const dbOrder = new OrderRepository(new CakeRepository());
+    await dbOrder.init();
 
-    const bookMapper = new JSONBookMapper();
-    const orderMapper = new JSONOrderMapper(bookMapper);
+    // create identifiable cake
+    const cake = CakeBuilder.newBuilder()
+        .setType("Birthday")
+        .setFlavor("Chocolate")
+        .setFilling("Cream")
+        .setSize(8)
+        .setLayers(2)
+        .setFrostingType("Buttercream")
+        .setFrostingFlavor("Vanilla")
+        .setDecorationType("Sprinkles")
+        .setDecorationColor("Rainbow")
+        .setCustomMessage("Happy Birthday!")
+        .setShape("Round")
+        .setAllergies("None")
+        .setSpecialIngredients("None")
+        .setPackagingType("Box")
+        .build();
 
-    const orders = data.map((order: { [key: string]: string }) => orderMapper.map(order));
+    const idCake = IdentifiableCakeBuilder.newBuilder().setID(Math.random().toString(36).substring(2, 15)).setCake(cake).build();
 
-    console.log(orders);
+    // create identifiable order
+    const order = OrderBuilder.newBuilder().setItem(cake).setPrice(100).setQuantity(1).setId(Math.random().toString(36).substring(2, 15)).build();
+
+    const idOrder = IdentifiableOrderItemBuilder.newBuilder().setItem(idCake).setOrder(order).build();
+
+    await dbOrder.create(idOrder);
+
+    await dbOrder.delete(idOrder.getID());
+    await dbOrder.update(idOrder);
+    
+    console.log((await dbOrder.getAll()).length);
+
 }
-mappingJson();
 
-async function mappingXml(): Promise<void> {
-    const data = await parseXML("src/data/toy orders.xml");
+// main();
 
-    const toyMapper = new XMLToyMapper();
-    const orderMapper = new XMLOrderMapper(toyMapper);
-
-    const orders = data.root.data.row.map((row: { [key: string]: string }) => orderMapper.map(row));
-
-    console.log(orders);
-}
-mappingXml();
+DBSandBox();
