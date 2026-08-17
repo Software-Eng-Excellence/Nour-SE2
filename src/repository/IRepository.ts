@@ -73,7 +73,7 @@ export interface IRepository<T extends ID> {
      * @throws {ItemNotFoundException} - Thrown when an item with the specified ID is not found.
      * @throws {DbException} - Thrown when an error occurs while interacting with the database.
      */
-    delete(id: id): Promise<void>;
+    delete(id: T): Promise<void>;
 }
 
 export interface InitializableRepository<T extends ID> extends IRepository<T>, Initializable {

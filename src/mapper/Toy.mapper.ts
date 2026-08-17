@@ -1,6 +1,6 @@
-import { Toy } from "../model/Toy.model";
+import { IdentifiedToy, Toy } from "../model/Toy.model";
 import { IMapper } from "./IMapper";
-import { ToyBuilder } from "../model/builders/toy.builder";
+import { IdentifiableToyBuilder, ToyBuilder } from "../model/builders/toy.builder";
 
 export class XMLToyMapper implements IMapper<{ [key: string]: string }, Toy> {
     map(data: { [key: string]: string }): Toy {
@@ -30,5 +30,46 @@ export class XMLToyMapper implements IMapper<{ [key: string]: string }, Toy> {
             BatteryRequired: data.isBatteryRequired().toString(),
             Description: data.getDescription()
         };
+    }
+}
+
+// psql
+export interface psToy {
+    orderid: string;
+    name: string;
+    brand: string;
+    type: string;
+    material: string;
+    color: string;
+    agerecommendation: string;
+    price: number;
+    weight: number;
+    batteryrequired: boolean;
+    description: string;
+}
+
+export class psToyMapper implements IMapper<psToy, IdentifiedToy> {
+
+    map(data: psToy): IdentifiedToy {
+        return IdentifiableToyBuilder.newBuilder().setToy(
+            ToyBuilder.newBuilder()
+                .setName(data.name)
+                .setBrand(data.brand)
+                .setType(data.type)
+                .setMaterial(data.material)
+                .setColor(data.color)
+                .setAgeRecommendation(data.agerecommendation)
+                .setPrice(data.price)
+                .setWeight(data.weight)
+                .setBatteryRequired(data.batteryrequired)
+                .setDescription(data.description)
+                .build()
+        )
+            .setId(data.orderid)
+            .build();
+    }
+
+    reverseMap(data: Toy): psToy {
+        throw new Error("Method not implemented.");
     }
 }

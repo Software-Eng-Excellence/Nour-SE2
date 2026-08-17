@@ -51,16 +51,15 @@ export abstract class OrderRepository implements IRepository<IOrder> {
        orders[index] = item;
        await this.save(orders);
     }
-    async delete(id: id): Promise<void> {
+    async delete(item: IOrder): Promise<void> {
         const orders = await this.load();
-        const index = orders.findIndex(o => o.getID() === id);
+        const index = orders.findIndex(o => o.getID() === item.getID());
         if (index === -1) {
-            logger.error("Failed to find order of id %s", id);
+            logger.error("Failed to find order of id %s", item.getID());
             throw new ItemNotFoundException("Failed to find the element");
         }
         orders.splice(index, 1);
         await this.save(orders);
-        logger.info("Successfully deleted order of id %s", id);
+        logger.info("Successfully deleted order of id %s", item.getID());
     }
-
 }

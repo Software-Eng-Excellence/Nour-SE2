@@ -1,4 +1,5 @@
-import { IItem, ItemCategory } from "./IItem";
+import { id } from "../repository/IRepository";
+import { IIdentifiableItem, IItem, ItemCategory } from "./IItem";
 
 export class Toy implements IItem {
     getCategory(): ItemCategory {
@@ -10,10 +11,10 @@ export class Toy implements IItem {
     private type: string;
     private material: string;
     private color: string;
-    private ageRecommendation: string;
+    private agerecommendation: string;
     private price: number;
     private weight: number;
-    private batteryRequired: boolean;
+    private batteryrequired: boolean;
     private description: string;
 
     constructor(
@@ -22,10 +23,10 @@ export class Toy implements IItem {
         type: string,
         material: string,
         color: string,
-        ageRecommendation: string,
+        agerecommendation: string,
         price: number,
         weight: number,
-        batteryRequired: boolean,
+        batteryrequired: boolean,
         description: string
     ) {
         this.name = name;
@@ -33,10 +34,10 @@ export class Toy implements IItem {
         this.type = type;
         this.material = material;
         this.color = color;
-        this.ageRecommendation = ageRecommendation;
+        this.agerecommendation = agerecommendation;
         this.price = price;
         this.weight = weight;
-        this.batteryRequired = batteryRequired;
+        this.batteryrequired = batteryrequired;
         this.description = description;
     }
 
@@ -56,7 +57,7 @@ export class Toy implements IItem {
          return this.color; 
         }
     getAgeRecommendation(): string {
-         return this.ageRecommendation; 
+         return this.agerecommendation; 
         }
     getPrice(): number {
          return this.price; 
@@ -65,9 +66,47 @@ export class Toy implements IItem {
          return this.weight; 
         }
     isBatteryRequired(): boolean {
-         return this.batteryRequired; 
+         return this.batteryrequired; 
         }
     getDescription(): string {
          return this.description; 
         }
+}
+
+export class IdentifiedToy extends Toy implements IIdentifiableItem {
+
+    constructor(
+        private id: id,
+        name: string,
+        brand: string,
+        type: string,
+        material: string,
+        color: string,
+        agerecommendation: string,
+        price: number,
+        weight: number,
+        batteryrequired: boolean,
+        description: string
+    ) {
+        super(
+            name,
+            brand,
+            type,
+            material,
+            color,
+            agerecommendation,
+            price,
+            weight,
+            batteryrequired,
+            description
+        );
+    }
+
+    getID(): id {
+        return this.id;
+    }
+
+    getId(): id {
+        return this.id;
+    }
 }

@@ -1,5 +1,5 @@
-import { BookBuilder } from "../model/builders/book.builder";
-import { Book } from "../model/Book.model";
+import { BookBuilder, IdentifiableBookBuilder } from "../model/builders/book.builder";
+import { Book, IdentifiedBook } from "../model/Book.model";
 import { IMapper } from "./IMapper";
 
 export class JSONBookMapper implements IMapper<{ [key: string]: string }, Book> {
@@ -30,5 +30,45 @@ export class JSONBookMapper implements IMapper<{ [key: string]: string }, Book> 
             Format: data.getFormat(),
             Description: data.getDescription()
         };
+    }
+}
+
+// psql
+export interface psBook {
+    orderid: string;
+    title: string;
+    author: string;
+    genre: string;
+    language: string;
+    publisher: string;
+    publicationyear: number;
+    isbn: string;
+    numberofpages: number;
+    format: string;
+    description: string;
+}
+
+export class psBookMapper implements IMapper<psBook, IdentifiedBook> {
+
+    map(data: psBook): IdentifiedBook {
+        return IdentifiableBookBuilder.newBuilder().setBook(
+         BookBuilder.newBuilder()
+            .setTitle(data.title)
+            .setAuthor(data.author)
+            .setGenre(data.genre)
+            .setFormat(data.format)
+            .setLanguage(data.language)
+            .setPublisher(data.publisher)
+            .setPublicationYear(data.publicationyear)
+            .setIsbn(data.isbn)
+            .setNumberOfPages(data.numberofpages)
+            .setDescription(data.description)
+            .build())
+            .setId(data.orderid)
+            .build();
+    }
+
+    reverseMap(data: IdentifiedBook): psBook {
+        throw new Error("Method not implemented.");
     }
 }
