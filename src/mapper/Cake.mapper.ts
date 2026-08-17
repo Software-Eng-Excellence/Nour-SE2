@@ -101,5 +101,51 @@ export class SQLiteCakeMapper implements IMapper<SQLiteCake,IdentifiableCake>{
             packagingType: data.getPackagingType()
         };
     }
+}
 
+// psql
+export interface psCake {
+    id: string;
+    type: string;
+    flavor: string;
+    filling: string;
+    size: number;
+    layers: number;
+    frostingtype: string;
+    frostingflavor: string;
+    decorationtype: string;
+    decorationcolor: string;
+    custommessage: string;
+    shape: string;
+    allergies: string;
+    specialingredients: string;
+    packagingtype: string;
+}
+
+export class psCakeMapper implements IMapper<psCake,IdentifiableCake>{
+    map(data: psCake): IdentifiableCake {
+        return IdentifiableCakeBuilder.newBuilder()
+            .setCake(CakeBuilder.newBuilder().
+                setType(data.type)
+                .setFlavor(data.flavor)
+                .setFilling(data.filling)
+                .setSize(data.size)
+                .setLayers(data.layers)
+                .setFrostingType(data.frostingtype)
+                .setFrostingFlavor(data.frostingflavor)
+                .setDecorationType(data.decorationtype)
+                .setDecorationColor(data.decorationcolor)
+                .setCustomMessage(data.custommessage)
+                .setShape(data.shape)
+                .setAllergies(data.allergies)
+                .setSpecialIngredients(data.specialingredients)
+                .setPackagingType(data.packagingtype)
+                .build()
+            )
+            .setID(data.id.toString())
+            .build();
+    }
+    reverseMap(data: IdentifiableCake): psCake {
+        throw new Error("Method not implemented.");
+    }
 }

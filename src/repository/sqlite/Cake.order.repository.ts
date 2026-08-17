@@ -131,13 +131,15 @@ export class CakeRepository implements IRepository<IdentifiableCake> , Initializ
             throw new DbException("Failed to update cake: "+ item.getID(), error as Error);
         }
     }
-    async delete(id: id): Promise<void> {
-        try{
+    async delete(item: IdentifiableCake): Promise<void> {
+        try {
             const conn = await ConnectionManager.getConnection();
-            await conn.run(DELETE_ID, id);
-        }catch(error:unknown){
-            logger.error("Failed to delete cake: %s %o", id, error as Error);
-            throw new DbException("Failed to delete cake: "+ id, error as Error);
+            await conn.run( DELETE_ID,item.getID());
+
+        } catch (error: unknown) {
+
+            logger.error("Failed to delete cake: %s %o",item.getID(),error as Error);
+            throw new DbException("Failed to delete cake: " + item.getID(),error as Error);
         }
     }
 }

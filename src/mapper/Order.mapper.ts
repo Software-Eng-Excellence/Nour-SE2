@@ -111,3 +111,30 @@ export class SQLiteOrderMapper implements IMapper<{data: SQLieteOrder, item: IId
         }
     }    
 }
+// psql
+export interface psOrder {
+    id: string;
+    quantity: number;
+    price: number;
+    item_category: string;
+    item_id: string;
+}
+
+export class PSQLOrderMapper implements IMapper<{ data: psOrder, item: IIdentifiableItem }, IIdentifiableOrderItem> {
+    map({ data, item }: { data: psOrder; item: IIdentifiableItem; }): IIdentifiableOrderItem {
+        return IdentifiableOrderItemBuilder
+            .newBuilder()
+            .setOrder(OrderBuilder.newBuilder()
+                    .setId(data.id)
+                    .setPrice(data.price)
+                    .setQuantity(data.quantity)
+                    .setItem(item)
+                    .build())
+            .setItem(item)
+            .build();
+    }
+
+    reverseMap(data: IIdentifiableOrderItem): { data: psOrder; item: IIdentifiableItem; } {
+        throw new Error("Method not implemented.");
+    }
+}

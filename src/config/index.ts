@@ -11,6 +11,7 @@ export default{
         csv: {
             cake: "src/data/cake orders.csv"
         },
-        sqlite: "src/data/orders.db"
+        sqlite: "src/data/orders.db",
+        psql: process.env.DATABASE_URL,
     }
 }
