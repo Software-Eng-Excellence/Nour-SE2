@@ -1,54 +1,25 @@
-import logger from "./util/logger";
-import { CakeOrderRepository } from "./repository/file/Cake.order.repository";
-import config from "./config";
-import { CakeBuilder, IdentifiableCakeBuilder } from "./model/builders/cake.builder";
-import { IdentifiableOrderItemBuilder, OrderBuilder } from "./model/builders/order.builder";
+import { MapperFactory } from "./mapper/Mapper.factory";
+import {RepositoryFactory,DMmode} from "./repository/Repository.factory";
 import { ItemCategory } from "./model/IItem";
-import { DMmode, RepositoryFactory } from "./repository/Repository.factory";
 
+async function main(){
 
-async function main() {
-    const path = config.storagePath.csv.cake;
-    const repository = new CakeOrderRepository(path);
-    const data = await repository.get("17");
-    logger.info("List of orders:\n %o", data);
+    const cakeMapper = MapperFactory.create(DMmode.POSTGRESQL,ItemCategory.CAKE);
+    console.log("Cake mapper:",cakeMapper.constructor.name);
 
+    const bookMapper = MapperFactory.create(DMmode.POSTGRESQL,ItemCategory.BOOK);
+    console.log("Book mapper:",bookMapper.constructor.name);
+
+    const toyMapper = MapperFactory.create(DMmode.POSTGRESQL,ItemCategory.TOY);
+    console.log("Toy mapper:",toyMapper.constructor.name);
+
+    const cakeRepository = await RepositoryFactory.create(DMmode.POSTGRESQL,ItemCategory.CAKE);
+    console.log( "Cake repository:",cakeRepository.constructor.name);
+
+    const bookRepository = await RepositoryFactory.create(DMmode.POSTGRESQL,ItemCategory.BOOK);
+    console.log("Book repository:",bookRepository.constructor.name);
+
+    const toyRepository = await RepositoryFactory.create(DMmode.POSTGRESQL,ItemCategory.TOY);
+    console.log("Toy repository:",toyRepository.constructor.name);
 }
-
-async function DBSandBox() {
-    
-    const dbOrder = await RepositoryFactory.create(DMmode.FILE, ItemCategory.CAKE);
-
-    // create identifiable cake
-    const cake = CakeBuilder.newBuilder()
-        .setType("Birthday")
-        .setFlavor("Chocolate")
-        .setFilling("Cream")
-        .setSize(8)
-        .setLayers(2)
-        .setFrostingType("Buttercream")
-        .setFrostingFlavor("Vanilla")
-        .setDecorationType("Sprinkles")
-        .setDecorationColor("Rainbow")
-        .setCustomMessage("Happy Birthday!")
-        .setShape("Round")
-        .setAllergies("None")
-        .setSpecialIngredients("None")
-        .setPackagingType("Box")
-        .build();
-
-    const idCake = IdentifiableCakeBuilder.newBuilder().setID(Math.random().toString(36).substring(2, 15)).setCake(cake).build();
-
-    // create identifiable order
-    const order = OrderBuilder.newBuilder().setItem(cake).setPrice(100).setQuantity(1).setId(Math.random().toString(36).substring(2, 15)).build();
-
-    const idOrder = IdentifiableOrderItemBuilder.newBuilder().setItem(idCake).setOrder(order).build();
-
-    await dbOrder.create(idOrder);
-
-    console.log((await dbOrder.getAll()).length);
-}
-
-// main();
-
-DBSandBox();
+main()
