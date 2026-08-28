@@ -1,25 +1,49 @@
-import { MapperFactory } from "./mapper/Mapper.factory";
-import {RepositoryFactory,DMmode} from "./repository/Repository.factory";
-import { ItemCategory } from "./model/IItem";
+import express, { response } from 'express';
+import config  from './config';
+import logger from './util/logger';
+import helmet from 'helmet';
+import bodyParser from 'body-parser';
+import cors from 'cors';
+import requestLogger from './middleware/requestLogger';
+import routes from './routes';
+import { ApiException } from './util/exceptions/ApiException';
+import { NextFunction, Response, Request } from "express";
 
-async function main(){
+const app = express();
 
-    const cakeMapper = MapperFactory.create(DMmode.POSTGRESQL,ItemCategory.CAKE);
-    console.log("Cake mapper:",cakeMapper.constructor.name);
+//  config helmet
+app.use(helmet());
 
-    const bookMapper = MapperFactory.create(DMmode.POSTGRESQL,ItemCategory.BOOK);
-    console.log("Book mapper:",bookMapper.constructor.name);
+// config body parser
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-    const toyMapper = MapperFactory.create(DMmode.POSTGRESQL,ItemCategory.TOY);
-    console.log("Toy mapper:",toyMapper.constructor.name);
+// config cors 
+app.use(cors());
 
-    const cakeRepository = await RepositoryFactory.create(DMmode.POSTGRESQL,ItemCategory.CAKE);
-    console.log( "Cake repository:",cakeRepository.constructor.name);
+// config midleware
+app.use(requestLogger);
 
-    const bookRepository = await RepositoryFactory.create(DMmode.POSTGRESQL,ItemCategory.BOOK);
-    console.log("Book repository:",bookRepository.constructor.name);
+// config routes 
+app.use('/', routes)
 
-    const toyRepository = await RepositoryFactory.create(DMmode.POSTGRESQL,ItemCategory.TOY);
-    console.log("Toy repository:",toyRepository.constructor.name);
-}
-main()
+// config 404 handler
+app.use((req, res) => {
+    res.status(404).json({ error: "Not Found" });
+});
+
+// config Error Handler
+app.use((err:Error , req: Request , res: Response ,next: NextFunction) => {
+    if(err instanceof ApiException){
+        const apiException = err as ApiException;
+        logger.error("API exception of status %d: %s", apiException.status , err.message)
+        res.status(apiException.status).json({error:err.message})
+    }else{
+        logger.error("Unhandeled Error: %s " , err.message)
+        res.status(500).json({error:"Internal Servar Error"})
+    }
+});
+
+app.listen(config.port, config.host ,() => {
+    logger.info('Server is running on http://%s:%d', config.host, config.port);
+});
