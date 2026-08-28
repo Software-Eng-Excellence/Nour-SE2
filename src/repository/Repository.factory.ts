@@ -1,6 +1,6 @@
 import config from "../config";
 import { ItemCategory } from "../model/IItem";
-import { IOrder } from "../model/IOrder";
+import { IIdentifiableOrderItem, IOrder } from "../model/IOrder";
 import { CakeOrderRepository } from "./file/Cake.order.repository";
 import { Initializable, IRepository } from "./IRepository";
 import { CakeRepository } from "./sqlite/Cake.order.repository";
@@ -9,24 +9,15 @@ import { psOrderRepository } from "./psql/order.repository";
 import { psCakeOrderRepository } from "./psql/cake.order.repository";
 import { psBookOrderRepository } from "./psql/book.order.repository";
 import { psToyOrderRepository } from "./psql/toy.order.repository";
-
-
-export enum DMmode {
-    SQLITE,
-    FILE,
-    POSTGRESQL
-}
+import { DBMode } from "../model/DBModes.model";
 
 export class RepositoryFactory {
 
-    public static async create(
-        mode: DMmode,
-        category: ItemCategory
-    ): Promise<IRepository<IOrder>> {
+    public static async create(mode: DBMode,category: ItemCategory): Promise<IRepository<IIdentifiableOrderItem>> {
 
         switch (mode) {
-            case DMmode.SQLITE: {
-                let repository: IRepository<IOrder> & Initializable;
+            case DBMode.SQLITE: {
+                let repository: IRepository<IIdentifiableOrderItem> & Initializable;
                 switch (category) {
                     case ItemCategory.CAKE:
                         repository = new OrderRepository(new CakeRepository());
@@ -38,16 +29,13 @@ export class RepositoryFactory {
                 await repository.init();
                 return repository;
             }
-            case DMmode.FILE: {
-                switch (category) {
-                    case ItemCategory.CAKE:
-                        return new CakeOrderRepository(config.storagePath.csv.cake);
-                    default:
-                        throw new Error("Unsupported category");
-                }
+            // Deprecated
+            case DBMode.FILE: {
+                throw new Error("File mode is deprecated")
             }
-            case DMmode.POSTGRESQL: {
-                let repository: IRepository<IOrder> & Initializable;
+
+            case DBMode.POSTGRESQL: {
+                let repository: IRepository<IIdentifiableOrderItem> & Initializable;
 
                 switch (category) {
                     case ItemCategory.CAKE:
