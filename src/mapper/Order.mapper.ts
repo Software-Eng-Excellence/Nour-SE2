@@ -2,6 +2,7 @@ import { IIdentifiableOrderItem, IOrder } from "../model/IOrder";
 import { IMapper } from "./IMapper";
 import { IdentifiableOrderItemBuilder, OrderBuilder } from "../model/builders/order.builder";
 import { IIdentifiableItem, IItem } from "../model/IItem";
+import { IdentifiableOrderItem } from "../model/Order.model";
 
 
 export class CSVOrderMapper implements IMapper<string[], IOrder> {
@@ -136,5 +137,38 @@ export class PSQLOrderMapper implements IMapper<{ data: psOrder, item: IIdentifi
 
     reverseMap(data: IIdentifiableOrderItem): { data: psOrder; item: IIdentifiableItem; } {
         throw new Error("Method not implemented.");
+    }
+}
+
+interface JsonItem{
+    id:string;
+}
+interface JsonOrder{
+    id:string;
+    category:string;
+    item: JsonItem;
+    quantity:number;
+    price:number;
+}
+
+export class JsonRequestOrderMapper implements IMapper<any, IdentifiableOrderItem> {
+    constructor(private itemMapper: IMapper<any, IIdentifiableItem>) { }
+
+    map(data: any): IdentifiableOrderItem {
+        const item = this.itemMapper.map(data.item);
+        const order = OrderBuilder.newBuilder()
+                .setId(data.id)
+                .setPrice(data.price)
+                .setQuantity(data.quantity)
+                .setItem(item)
+                .build()
+
+        return IdentifiableOrderItemBuilder.newBuilder().setOrder(order).setItem(item).build();
+    }
+    reverseMap(data: IdentifiableOrderItem): any {
+        return{
+            category: data.getItem().getCategory(),
+            ...data,
+        }
     }
 }
