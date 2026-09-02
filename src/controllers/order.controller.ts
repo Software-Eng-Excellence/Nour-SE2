@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { orderManagmentService } from "../services/orderManagment.service";
 import { IdentifiableOrderItem } from '../model/Order.model';
 import { JsonRequestFactory } from '../mapper';
+import { BadRequestException } from '../util/exceptions/http/BadRequestException';
 
 export class OrderController {
     constructor(private readonly orderService: orderManagmentService) { }
@@ -10,7 +11,9 @@ export class OrderController {
     public async createOrder(req: Request, res: Response) {
         const order: IdentifiableOrderItem = JsonRequestFactory.create(req.body.category).map(req.body);
         if (!order) {
-            throw new Error("Order is required to create order");
+            throw new BadRequestException("Order is required to create order" ,{
+                OrderNotFound: true
+            });
         }
         const newOrder = await this.orderService.createOrder(order);
         res.status(201).json(newOrder);
@@ -19,7 +22,9 @@ export class OrderController {
     public async getOrder(req: Request, res: Response) {
         const id = req.params.id;
         if (!id || Array.isArray(id)) {
-            throw new Error("Id is required to get order");
+            throw new BadRequestException("Id is required to get order",{
+                IdNotFound: true
+            });
         }
         const order = await this.orderService.getOrder(id);
         res.status(200).json(order);
@@ -33,14 +38,22 @@ export class OrderController {
     public async updateOrder(req: Request, res: Response) {
         const id = req.params.id;
         if (!id) {
-            throw new Error("Id is required to update order");
+            throw new BadRequestException("Id is required to update order",{
+                IdNotFound: true
+            });
         }
         const order: IdentifiableOrderItem = JsonRequestFactory.create(req.body.category).map(req.body);
         if (!order) {
-            throw new Error("Order is required to update order");
+            throw new BadRequestException("Order is required to update order",{
+                OrderNotDefined: true
+            });
         }
         if (order.getID() !== id) {
-            throw new Error("Order id in path and body must be same");
+            throw new BadRequestException("Id in the body is different than id in params",{
+                IdMismatch: true,
+                IdInBody: order.getID(),
+                IdInParams: id
+            });
         }
         await this.orderService.updateOrder(order);
         res.status(200).json(order);
@@ -49,7 +62,9 @@ export class OrderController {
     public async deleteOrder(req: Request, res: Response) {
         const id = req.params.id;
             if (!id || Array.isArray(id)) {
-        throw new Error("Id is required to get order");
+        throw new BadRequestException("Id is required to get order",{
+            IdNotDefined: true
+        });
         }
         await this.orderService.deleteOrder(id);
         res.status(204).send({ message: "Order deleted successfully" });
