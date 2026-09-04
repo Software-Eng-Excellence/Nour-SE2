@@ -35,26 +35,20 @@ export class RepositoryFactory {
             }
 
             case DBMode.POSTGRESQL: {
-                let repository: IRepository<IIdentifiableOrderItem> & Initializable;
-
                 switch (category) {
                     case ItemCategory.CAKE:
-                        repository = new psOrderRepository(new psCakeOrderRepository());
-                        break;
+                        return new psOrderRepository(new psCakeOrderRepository());
+
                     case ItemCategory.BOOK:
-                        repository = new psOrderRepository(new psBookOrderRepository());
-                        break;
+                        return new psOrderRepository(new psBookOrderRepository());
+
                     case ItemCategory.TOY:
-                        repository = new psOrderRepository(new psToyOrderRepository());
-                        break;
+                        return new psOrderRepository(new psToyOrderRepository());
+
                     default:
                         throw new Error("Unsupported category");
                 }
-                await repository.init();
-                return repository;
             }
-            default:
-                throw new Error("Unsupported DB mode");
         }
     }
 }
