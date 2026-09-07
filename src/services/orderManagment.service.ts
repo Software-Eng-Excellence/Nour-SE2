@@ -6,7 +6,6 @@ import { RepositoryFactory } from "../repository/Repository.factory";
 import { generateUUID } from "../util";
 import { BadRequestException } from "../util/exceptions/http/BadRequestException";
 import { NotFoundException } from "../util/exceptions/http/NotFoundException";
-import { ServiceException } from "../util/exceptions/ServiceException";
 
 export class orderManagmentService{
 
