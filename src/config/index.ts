@@ -1,12 +1,14 @@
 import dotenv from "dotenv"
 import path from "path"
-import { DBMode } from "../model/DBModes.model";
-dotenv.config({path: path.join(__dirname,'../../.env')})
+import { DBMode } from "./types";
+import { StringValue } from "ms"
 
+dotenv.config({path: path.join(__dirname,'../../.env')})
 
 export default{
     logDir: process.env.LOG_DIR || "./logs",
     isDev: process.env.NODE_ENV === "development",
+    isProduction: process.env.NODE_ENV === "production",
     storagePath: {
         csv: {
             cake: "src/data/cake orders.csv"
@@ -17,5 +19,9 @@ export default{
     port: process.env.PORT ?parseInt(process.env.PORT): 3000,
     host: process.env.HOST || "localhost",
     dbMode: DBMode.SQLITE,
-    // dbMode: DBMode.POSTGRESQL,
+    auth:{
+        secretKey: process.env.JWT_SECRET_KEY || "secret_1234567890",
+        tokenExpiration: (process.env.TOKEN_EXPIRATION || "15m") as StringValue,
+        refreshTokenExpiration : (process.env.REFRESH_TOKEN_EXPIRATION || "7d") as StringValue
+    }
 }

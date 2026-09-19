@@ -5,12 +5,14 @@ export class User implements ID {
     name: string;
     email: string;
     password: string;
+    role: string;
 
-    constructor(id: string, name: string, email: string, password: string) {
+    constructor(id: string = '', name: string, email: string, password: string , role:string = 'user') {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
     getID(): id {
         throw new Error("Method not implemented.");

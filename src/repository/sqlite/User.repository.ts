@@ -4,6 +4,7 @@ import { DbException, InitializationException, ItemNotFoundException } from "../
 import logger from "../../util/logger";
 import ConnectionManager from "./ConnectionManager";
 import { UserMapper } from "../../mapper/User.mapper";
+import { Database } from "sqlite";
 
 const CREATE_TABLE = `
     create table if not exists User(
@@ -25,10 +26,12 @@ const DELETE_User = `DELETE FROM User WHERE id = ?`
 const UPDATE_User = `update User set name = ?, email = ?, password = ? where id = ?`
 
 export class UserRepository implements IRepository<User>, Initializable {
-
+    private db :Database | null = null;
+    
     async init(): Promise<void> {
         try {
             const conn = await ConnectionManager.getConnection();
+            this.db = conn;
             await conn.exec(CREATE_TABLE)
             logger.info("Table Init")
         } catch (error: unknown) {
@@ -110,6 +113,21 @@ export class UserRepository implements IRepository<User>, Initializable {
             throw new DbException("Failed to delete User of id: " + item.getId(), error as Error)
 
         }
+    }
+    async getByEmail(email: string): Promise<User> {
+        if(!this.db){
+            throw new Error("Database not initialized");
+        }
+        const user = await this.db.get("SELECT * FROM User WHERE email = ?", email);
+        if(!user){
+            throw new ItemNotFoundException("User not found");
+        }
+        return new User(
+            user.id,
+            user.name,
+            user.email,
+            user.password
+        );
     }
 
 }

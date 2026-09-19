@@ -8,6 +8,7 @@ import requestLogger from './middleware/requestLogger';
 import routes from './routes';
 import { NextFunction, Response, Request } from "express";
 import { HttpException } from './util/exceptions/http/HttpException';
+import cookieParser from 'cookie-parser';
 
 const app = express();
 
@@ -17,6 +18,9 @@ app.use(helmet());
 // config body parser
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// Middleware setup
+app.use(cookieParser());
 
 // config cors 
 app.use(cors());

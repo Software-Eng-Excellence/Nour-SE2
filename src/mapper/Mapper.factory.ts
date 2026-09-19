@@ -4,7 +4,7 @@ import {CSVCakeMapper,SQLiteCakeMapper,psCakeMapper} from "./Cake.mapper";
 import {JSONBookMapper,psBookMapper} from "./Book.mapper";
 import {XMLToyMapper,psToyMapper} from "./Toy.mapper";
 
-import { DBMode } from "../model/DBModes.model";
+import { DBMode } from "../config/types";
 
 export class MapperFactory {
     public static create(mode: DBMode,category: ItemCategory): IMapper<any, any> {

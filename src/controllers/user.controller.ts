@@ -6,6 +6,7 @@ import { BadRequestException } from "../util/exceptions/http/BadRequestException
 import { generateUUID } from "../util/index";
 import { ServiceException } from "../util/exceptions/http/ServiceException";
 import logger from "../util/logger";
+import { toRole } from "../config/roles";
 
 export class UserController {
 
@@ -30,7 +31,7 @@ export class UserController {
                 throw new BadRequestException("Invalid email format")
             }
 
-            const newUser = new User(generateUUID("user"), name, email, password);
+            const newUser = new User(generateUUID("user"), name, email, password, toRole('user'));
             const newId = await this.userService.createUser(newUser);
             try{
                 const createdUser = await this.userService.getUserById(newId);
@@ -87,7 +88,8 @@ export class UserController {
                 id,
                 name || existingUser.getName(),
                 email || existingUser.getEmail(),
-                password || existingUser.getPassword()
+                password || existingUser.getPassword(),
+                toRole(existingUser.role)
             );
             await this.userService.updateUser(updatedUser);
             const result = await this.userService.getUserById(id);

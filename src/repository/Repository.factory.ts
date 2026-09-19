@@ -9,7 +9,7 @@ import { psOrderRepository } from "./psql/order.repository";
 import { psCakeOrderRepository } from "./psql/cake.order.repository";
 import { psBookOrderRepository } from "./psql/book.order.repository";
 import { psToyOrderRepository } from "./psql/toy.order.repository";
-import { DBMode } from "../model/DBModes.model";
+import { DBMode } from "../config/types";
 
 export class RepositoryFactory {
 

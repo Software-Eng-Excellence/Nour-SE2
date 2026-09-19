@@ -2,6 +2,7 @@ import { UserController } from "../controllers/user.controller";
 import { Router } from "express";
 import { asyncHandler } from "../middleware/asyncHandler";
 import { UserService } from "../services/userManagment.service";
+import { authenticate } from "../middleware/auth";
 
 const service = new UserService()
 
@@ -11,11 +12,11 @@ const userRoutes = Router();
 
 userRoutes.route("/")
     .post(asyncHandler(userController.createUser.bind(userController)))
-    .get(asyncHandler(userController.getAllUsers.bind(userController)));
+    .get(authenticate, asyncHandler(userController.getAllUsers.bind(userController)));
 userRoutes.route("/:id")
-    .get(asyncHandler(userController.getUserById.bind(userController)))
-    .put(asyncHandler(userController.updateUser.bind(userController)))
-    .delete(asyncHandler(userController.deleteUser.bind(userController)));
+    .get(authenticate, asyncHandler(userController.getUserById.bind(userController)))
+    .put(authenticate,asyncHandler(userController.updateUser.bind(userController)))
+    .delete(authenticate, asyncHandler(userController.deleteUser.bind(userController)));
 
 
 

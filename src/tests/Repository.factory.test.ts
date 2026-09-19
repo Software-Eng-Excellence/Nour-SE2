@@ -3,7 +3,7 @@ import { ItemCategory } from "../model/IItem";
 import { OrderRepository } from "../repository/sqlite/Order.repository";
 import { CakeOrderRepository } from "../repository/file/Cake.order.repository";
 import { psOrderRepository } from "../repository/psql/order.repository";
-import { DBMode } from "../model/DBModes.model";
+import { DBMode } from "../config/types";
 
 describe("RepositoryFactory", () => {
 

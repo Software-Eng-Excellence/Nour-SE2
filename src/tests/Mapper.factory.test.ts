@@ -2,7 +2,7 @@ import { MapperFactory } from "../mapper/Mapper.factory";
 import {CSVCakeMapper,SQLiteCakeMapper,psCakeMapper} from "../mapper/Cake.mapper";
 import {JSONBookMapper,psBookMapper} from "../mapper/Book.mapper";
 import {XMLToyMapper,psToyMapper} from "../mapper/Toy.mapper";
-import { DBMode } from "../model/DBModes.model";
+import { DBMode } from "../config/types";
 import { ItemCategory } from "../model/IItem";
 
 describe("MapperFactory", () => {
